@@ -24,6 +24,18 @@ kubectl create -f https://github.com/kubevirt/containerized-data-importer/releas
 kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.8.1/deploy/longhorn.yaml
 ```
 
+## Clusterctl
+
+```shell
+export VERSION=$(curl -s https://api.github.com/repos/kubernetes-sigs/cluster-api/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
+curl -SLO https://github.com/kubernetes-sigs/cluster-api/releases/download/${VERSION}$/clusterctl-linux-amd64
+chmod +x clusterctl-linux-amd64
+sudo mv clusterctl-linux-amd64 /usr/local/bin/clusterctl
+
+clusterctl version # test if install is ok
+```
+
 # Init CAPI
 
 ```shell
