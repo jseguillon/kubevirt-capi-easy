@@ -1,6 +1,6 @@
 # Requirements
 
-## Kubevirt 
+## Kubevirt
 
 ```shell
 export RELEASE=$(curl https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt)
@@ -42,13 +42,13 @@ clusterctl version # test if install is ok
 clusterctl init --ipam in-cluster --control-plane talos --bootstrap talos  --infrastructure kubevirt --addon helm
 ```
 
-# Add Talos VirtualMachineClusterPreference
+# Set up cluster
+
+## Add Talos VirtualMachineClusterPreference
 
 ```shell
-kubectl apply -f talosVMCP.yaml     
+kubectl apply -f talosVMCP.yaml
 ```
-
-# Set up cluster
 
 ## Generate yamls
 
@@ -75,7 +75,7 @@ kubectl apply -f talos-cilium.yaml
 clusterctl describe cluster capi-quickstart
 ```
 
-## special tips
+## Special tips
 
 ### wsl2 for Kubervirt
 ```
