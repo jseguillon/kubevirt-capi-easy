@@ -98,7 +98,7 @@ export POD_CIDR_BLOCK=10.243.0.0/16
 export SVC_CIDR_BLOCK=10.95.0.0/16
 export CAPK_GUEST_K8S_VERSION="v1.32.1"
 
-clusterctl generate cluster talos-cilium --kubernetes-version ${CAPK_GUEST_K8S_VERSION} --control-plane-machine-count=1  --worker-machine-count=1   --from ./cluster-template-cip-talos-cilium-ebpf-cdi.yaml  > talos-cilium.yaml
+clusterctl generate cluster talos-cilium --kubernetes-version ${CAPK_GUEST_K8S_VERSION} --control-plane-machine-count=1  --worker-machine-count=1   --from ./cluster-template-talos-cilium-ebpf-cdi.yaml  > talos-cilium.yaml
 ```
 
 Apply cluster:
