@@ -30,7 +30,7 @@ metadata:
 spec:
   controlPlaneServiceTemplate:
     spec:
-      type: ClusterIP
+      type: ${CONTROL_PLANE_SVC_TYPE}
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
 kind: KubevirtMachineTemplate

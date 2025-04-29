@@ -56,6 +56,7 @@ kubectl apply -f talosVMCP.yaml
 export INSTANCE_PREFERENCE=talos
 export INSTANCE_TYPE=o1.xlarge # see kubectl get VirtualMachineClusterPreference for more instance_types
 export ROOT_VOLUME_SIZE=10G
+export CONTROL_PLANE_SVC_TYPE=ClusterIP # LoadBalancer, ClusterIP or NodePort
 export STORAGE_CLASS_NAME=longhorn # Can not be localpath because of CDI importer
 export TALOS_VERSION=v1.9.5
 export TALOS_IMAGE_URL=https://factory.talos.dev/image/376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba/v1.9.5/openstack-amd64.raw.xz
