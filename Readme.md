@@ -1,4 +1,4 @@
-# CAPI easy via Kubevirt
+# CAPI Made Easy with KubeVirt
 
 This repo contains cookbooks for starting Kubernetes via Cluster API using Kubevirt.
 
@@ -9,18 +9,19 @@ Supported platforms:
 
 TODOs:
   - support non Longhorn version (WIP)
+  - autoscaler
 
-# Plaftorm Requirements
+# Platform requirements
 
 To test this repo, you need a working Kubernetes running on a Linux.
 
-You also need your Kubernetes nodes support, see this [StackOverflow answer](https://stackoverflow.com/questions/11116704/check-if-vt-x-is-activated-without-having-to-reboot-in-linux#answer-51272679) to know how to test this.
+You also need your Kubernetes nodes support virtualization, see this [StackOverflow answer](https://stackoverflow.com/questions/11116704/check-if-vt-x-is-activated-without-having-to-reboot-in-linux#answer-51272679) to know how to test this.
 
-You'll also need cUrl and kubectl of course.
+You'll also need curl and kubectl of course.
 
 ## Kubevirt
 
-Kubevirt is the tool that allows you to run virtual machines in Kubernetes. Installation is straight forward:
+Kubevirt is the tool that allows you to run virtual machines in Kubernetes. Installation is straightforward:
 ```shell
 export RELEASE=$(curl https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt)
 kubectl apply -f https://github.com/kubevirt/kubevirt/releases/download/${RELEASE}/kubevirt-operator.yaml
@@ -31,7 +32,7 @@ kubectl -n kubevirt wait kv kubevirt --for condition=Available
 
 ## virtctl
 
-virtctl is a command line tool that can interacts with Kubevirt virtual machines:
+virtctl is a command line tool that can interact with Kubevirt virtual machines:
 ```shell
 export VERSION=$(curl https://storage.googleapis.com/kubevirt-prow/release/kubevirt/kubevirt/stable.txt)\ncurl -SLO  https://github.com/kubevirt/kubevirt/releases/download/${VERSION}/virtctl-${VERSION}-linux-amd64
 sudo chmod +x virtctl-v1.5.0-linux-amd64
@@ -49,10 +50,10 @@ kubectl create -f https://github.com/kubevirt/containerized-data-importer/releas
 
 ## Longhorn
 
-Longhorn is a distributed storage, usefull when creating VMs you may want to move from one node to another. Installation is also very simple:
+Longhorn is a distributed storage, useful when creating VMs you may want to move from one node to another. Installation is also very simple:
 ```shell
 export VERSION=$(curl -s https://api.github.com/repos/longhorn/longhorn/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/${VERSION}$/deploy/longhorn.yaml
+kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/${VERSION}/deploy/longhorn.yaml
 ```
 
 ## Clusterctl
@@ -61,7 +62,7 @@ Clusterctl is the command line we'll use to generate CAPI clusters. Install via 
 ```shell
 export VERSION=$(curl -s https://api.github.com/repos/kubernetes-sigs/cluster-api/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
-curl -SLO https://github.com/kubernetes-sigs/cluster-api/releases/download/${VERSION}$/clusterctl-linux-amd64
+curl -SLO https://github.com/kubernetes-sigs/cluster-api/releases/download/${VERSION}/clusterctl-linux-amd64
 chmod +x clusterctl-linux-amd64
 sudo mv clusterctl-linux-amd64 /usr/local/bin/clusterctl
 
@@ -83,12 +84,12 @@ sudo sysctl -w fs.inotify.max_queued_events=2099999999
 
 Before creating the cluster, we need to use clusterctl to init the different providers we'll use:
 ```shell
-clusterctl init --ipam in-cluster --control-plane talos --bootstrap talos  --infrastructure kubevirt --addon helm
+clusterctl init --ipam in-cluster --control-plane talos --bootstrap talos --infrastructure kubevirt --addon helm
 ```
 
 ## Prepare cluster
 
-Current list of VMClusterPreference does not contain any Talos definition, let's add it:
+The current list of VMClusterPreferences does not include a Talos definition. Let's add one:
 
 ```shell
 kubectl apply -f talosVMCP.yaml
@@ -96,7 +97,7 @@ kubectl apply -f talosVMCP.yaml
 
 ## Choose your instance type
 
-Kubevirt installs instance types you can then use to avoid repeating yourself when defining resources for a VM. "o1.xlarge" is recommended for easy test, but you can get a list of existing types via `kubectl get VirtualMachineClusterInstancetype` for more instance types and then describe them to check their settings. Please not some of those types requires cpu-manager to be configured on your hosts kubelet (for example any of the "cx" serie)
+Kubevirt installs instance types you can then use to avoid repeating yourself when defining resources for a VM. "o1.xlarge" is recommended for easy test, but you can get a list of existing types via `kubectl get VirtualMachineClusterInstancetype` for more instance types and then describe them to check their settings. Please note that some of these types require cpu-manager to be configured on your hosts kubelet (for example any of the "cx" series)
 
 ## Prepare image
 
@@ -108,13 +109,13 @@ Go to https://factory.talos.dev/ and prepare your image by choosing:
   - Extensions: add any you want
   - Customization: leave as is
 
-You'll get some links and one of them is the link to a raw.xyz image (the one ending with openstack-amd64.raw.xz). Copy this link and remind it for later use.
+You will get some links and one of them is the link to a raw.xyz image (the one ending with openstack-amd64.raw.xz). Copy this link and save it for later use.
 
 ## Create cluster
 
-Creating a cluster with Cluster API is very easy. It uses a template mechanism with a few variables replacements.
+Creating a cluster with Cluster API is very easy. It uses a template mechanism with a few variable replacements.
 
-First let's export the variables that will be injected in the template. Every var can be tuned (please notice only the image variable is not preset and you MUST provide one):
+First let's export the variables that will be injected in the template. Each variable can be customized (please note that only the image variable is not preset, and you MUST provide it):
 ```shell
 export INSTANCE_PREFERENCE=talos
 export INSTANCE_TYPE=o1.xlarge # see kubectl get VirtualMachineClusterInstancetype for more instance_types
@@ -136,19 +137,19 @@ clusterctl generate cluster talos-cilium --kubernetes-version ${CAPK_GUEST_K8S_V
 
 You can check the generated file `talos-cilium.yaml` to understand what objects will be created.
 
-Next you can apply cluster:
+Next, you can apply the cluster:
 ```shell
 kubectl apply -f talos-cilium.yaml
 ```
 
 ## Check cluster
 
-clusterctl can give you overall status of the cluste:
+clusterctl can provide the overall status of the cluster:
 ```shell
 clusterctl describe cluster capi-quickstart
 ```
 
-Booting the whole cluster with one control plane and one node shoot take from 3 to 5 minutes depending one your hardware and Internet connexion.
+Booting the whole cluster with one control plane and one node should take from 3 to 5 minutes depending on your hardware and Internet connection.
 
 You can also check the status of a few CRDs:
   - VirtualMachine (created by Kubevirt) - kubectl get vms, kubectl describe vms
@@ -156,24 +157,24 @@ You can also check the status of a few CRDs:
 
 You can also check for logs in 'guest-console-log' of the VMs Pods. 
 
-You even can connect to graphic interface of Talos: get the name of the vm with `kubectl get vms` then `virtctl vnc`
+You can even connect to the graphical interface of Talos: get the name of the vm with `kubectl get vms` then `virtctl vnc`
 
 # Special tips
 
-## WSL2 for Kubervirt
+## WSL2 for KubeVirt
 
-Kubevirt on WSL2 will probably fail because of a message "/var/lib/kubelet is mounted on / but it is not a shared mount", let's fix it:
+Kubevirt on WSL2 will probably fail because of a message "/var/lib/kubelet is mounted on / but it is not a shared mount", you can fix it by running:
 ```
 sudo mount --make-shared /
 ```
 
-## k3s longhorn
+## k3s Longhorn
 
 ```
 sudo cp /var/lib/rancher/k3s/agent/etc/containerd/config.toml /var/lib/rancher/k3s/agent/etc/containerd/config-v3.toml.tmpl
 ```
 
-Edit `device_ownership_from_security_context` in /var/lib/rancher/k3s/agent/etc/containerd/config-v3.toml.tmpl and set to true
+Edit the `device_ownership_from_security_context` option in /var/lib/rancher/k3s/agent/etc/containerd/config-v3.toml.tmpl and set to true
 
 ```toml
 [plugins.'io.containerd.cri.v1.runtime']
@@ -185,4 +186,4 @@ Then restart k3s via `sudo systemctl restart  k3s`
 
 # Credits
 
-This work is mostly inspired by the excellent work of the kubernetes-sigs/cluster-api-provider-kubevirt team, thanks to them for their incredible work.
+This work is mostly inspired by the excellent work of the kubernetes-sigs/cluster-api-provider-kubevirt team, thanks to them for their amazing work.
