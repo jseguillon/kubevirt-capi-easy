@@ -79,9 +79,6 @@ spec:
                       name: dv-volume
               evictionStrategy: External
               volumes:
-                # - name: serviceaccount
-                #   serviceAccount:
-                #     serviceAccountName: cdi-cloner
                 - dataVolume:
                     name: "boot-volume"
                   name: dv-volume
